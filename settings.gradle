@@ -1,0 +1,35 @@
+pluginManagement {
+    repositories {
+        maven {
+            url = uri("https://mirror-maven.runflare.com/android/maven2/")
+        }
+        maven {
+            url = uri("https://mirror-maven.runflare.com/maven2/")
+        }
+        maven {
+            url = uri("https://mirror-maven.runflare.com/gradle-plugins/")
+        }
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        maven {
+            url = uri("https://mirror-maven.runflare.com/android/maven2/")
+        }
+        maven {
+            url = uri("https://mirror-maven.runflare.com/maven2/")
+        }
+        maven {
+            url = uri("https://mirror-maven.runflare.com/gradle-plugins/")
+        }
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "TestExam1"
+include ':app'
