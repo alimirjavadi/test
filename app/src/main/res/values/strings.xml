@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">TestExam1</string>
     <string name="name">Name</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
+    <string name="aswdefrgtuhyjukilrftcgvyhjkifghfgiujp9w9eewfuwrewruewru9r09eurwudrueurwwure9ue9rue9rueusr9ueruursudskjorjtojrgtdhhdghgfjfhgs">aswdefrgtuhyjukilrftcgvyhjkifghfgiujp9w9eewfuwrewruewru9r09eurwudrueurwwure9ue9rue9rueusr9ueruursudskjorjtojrgtdhhdghgfjfhgs</string>
+    <string name="welcome">Welcome</string>
 </resources>

@@ -22,18 +22,6 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapterName);
         recyclerView.setLayoutManager(layoutManager);
 
-        ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("some text from android");
-        progressDialog.setTitle("some title");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                progressDialog.dismiss();
-            }
-        },3000);
     }
 
 }
