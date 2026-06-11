@@ -20,4 +20,5 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapterName);
         recyclerView.setLayoutManager(layoutManager);
     }
+
 }
