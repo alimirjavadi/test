@@ -2,125 +2,72 @@ package com.example.testexam1;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.media.MediaPlayer;
-import android.net.Uri;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Handler;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.SeekBar;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.annotation.NonNull;
-
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import android.widget.Toast;
-
-import java.io.IOException;
+import android.widget.TextView;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 100) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                ReadMusic();
-            } else {
-                Toast.makeText(this, "Permision is not granted ", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    Handler handler;
-    Runnable runnable;
-    Boolean isplaying = false;
+    private BroadcastReceiver broadcastReceiver;
+    private boolean lastStatus = false;
+    private TextView txtStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        txtStatus = findViewById(R.id.txtStatus);
+        lastStatus = getInternetStatus(this);
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                boolean currentStatus = getInternetStatus(context);
 
-        String permision;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            permision = Manifest.permission.READ_MEDIA_AUDIO;
-        } else {
-            permision = Manifest.permission.READ_EXTERNAL_STORAGE;
-        }
+                if (currentStatus != lastStatus) {
+                    String time = new SimpleDateFormat("yyyy/MM/dd - HH:mm:ss", Locale.getDefault())
+                            .format(new Date());
 
-        if (ContextCompat.checkSelfPermission(this, permision) == PackageManager.PERMISSION_GRANTED) {
-            ReadMusic();
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{permision}, 100);
-        }
-
-    }
-
-    public MediaPlayer mediaPlayer;
-
-
-    public void ReadMusic() {
-        if (getIntent().getData() != null) {
-            Uri uri = getIntent().getData();
-            mediaPlayer = new MediaPlayer();
-            try {
-                mediaPlayer.setDataSource(this, uri);
-                mediaPlayer.prepare();
-                mediaPlayer.start();
-
-                SeekBar prg = findViewById(R.id.seekbar);
-                prg.setMax(mediaPlayer.getDuration());
-                prg.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        if (fromUser) {
-                            mediaPlayer.seekTo(progress);
-                        }
+                    String statusText;
+                    if (currentStatus) {
+                        statusText = "✅ اینترنت وصل شد";
+                    } else {
+                        statusText = "❌ اینترنت قطع شد";
                     }
 
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    txtStatus.setText(statusText + "\n" + time);
 
-                    }
-
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-
-                    }
-                });
-                handler = new Handler();
-                runnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        prg.setProgress(mediaPlayer.getCurrentPosition());
-                        handler.postDelayed(runnable, 1000);
-                    }
-                };
-
-                ImageView btnplay = findViewById(R.id.btnplay);
-                btnplay.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (isplaying == false) {
-                            mediaPlayer.start();
-                            isplaying = true;
-                            btnplay.setImageResource(R.drawable.pause);
-                            handler.post(runnable);
-                        } else {
-                            mediaPlayer.pause();
-                            isplaying = false;
-                            btnplay.setImageResource(R.drawable.play);
-                        }
-                    }
-                });
-                handler.post(runnable);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                    lastStatus = currentStatus;
+                }
             }
-        }
+        };
+
+        registerReceiver(broadcastReceiver,
+                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
+    public boolean getInternetStatus(Context context) {
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (connectivityManager == null) return false;
+
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (broadcastReceiver != null) {
+            unregisterReceiver(broadcastReceiver);
+        }
+    }
 }
