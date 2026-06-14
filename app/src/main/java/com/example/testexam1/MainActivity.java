@@ -1,73 +1,58 @@
 package com.example.testexam1;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.widget.TextView;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import android.view.View;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private List<Task> tasks = new ArrayList<>();
+    private RecyclerView rv_main ;
+    private AdapterTask adapterTask;
+    private TaskDao taskDao;
 
-    private BroadcastReceiver broadcastReceiver;
-    private boolean lastStatus = false;
-    private TextView txtStatus;
+    public static Activity currentActivity;
+    @Override
+    protected void onResume() {
+        super.onResume();
+        adapterTask.setTasks( taskDao.getAll());
+        currentActivity = this;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        txtStatus = findViewById(R.id.txtStatus);
-        lastStatus = getInternetStatus(this);
-        broadcastReceiver = new BroadcastReceiver() {
+
+        taskDao = AppDatabase.getDatabase(this).getTaskDao();
+
+        rv_main = findViewById(R.id.rv_main);
+        View btnAddTask = findViewById(R.id.add_task);
+        btnAddTask.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onReceive(Context context, Intent intent) {
-                boolean currentStatus = getInternetStatus(context);
+            public void onClick(View view) {
 
-                if (currentStatus != lastStatus) {
-                    String time = new SimpleDateFormat("yyyy/MM/dd - HH:mm:ss", Locale.getDefault())
-                            .format(new Date());
-
-                    String statusText;
-                    if (currentStatus) {
-                        statusText = "✅ اینترنت وصل شد";
-                    } else {
-                        statusText = "❌ اینترنت قطع شد";
-                    }
-
-                    txtStatus.setText(statusText + "\n" + time);
-
-                    lastStatus = currentStatus;
-                }
+                Intent intent = new Intent(MainActivity.this , ActivityAddTask.class);
+                MainActivity.this.startActivity(intent);
             }
-        };
+        });
 
-        registerReceiver(broadcastReceiver,
-                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-    }
+         adapterTask = new AdapterTask(taskDao);
 
-    public boolean getInternetStatus(Context context) {
-        ConnectivityManager connectivityManager =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        if (connectivityManager == null) return false;
-
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        return networkInfo != null && networkInfo.isConnected();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (broadcastReceiver != null) {
-            unregisterReceiver(broadcastReceiver);
+        for (int j = 0 ; j<20 ; j++){
+            Task task = new Task("title:"+j , "20pm",false,"");
+            tasks.add(task);
         }
+
+        rv_main.setLayoutManager(new LinearLayoutManager(this));
+        rv_main.setAdapter(adapterTask);
+        adapterTask.setTasks(tasks);
     }
 }
