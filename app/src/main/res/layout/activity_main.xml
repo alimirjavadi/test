@@ -5,20 +5,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragmentContainerView"
-        android:name="com.example.testexam1.FragmentMain"
-        android:layout_width="match_parent"
-        android:layout_gravity="center"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        tools:layout="@layout/fragment_main" />
 
-
-    <Button
-        android:id="@+id/btn"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="Go To Fragment B" />
+ <androidx.viewpager2.widget.ViewPager2
+     android:id="@+id/viewpager2"
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"/>
 
 </LinearLayout>

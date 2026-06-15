@@ -10,28 +10,27 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-public class FragmentB extends Fragment {
-
-    public static final String KEY_NAME ="STRING";
+public class FragmentA extends Fragment {
+    private static final String KEY_DATA = "SOME_KEY";
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_b, container, false);
-    }
+        return inflater.inflate(R.layout.fragment_a,container,false);
 
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        TextView textView = view.findViewById(R.id.textview);
-        textView.setText(getArguments().getString(KEY_NAME));
+        TextView fragment_textview = view.findViewById(R.id.fragment_textview);
+        fragment_textview.setText(getArguments().getString(KEY_DATA));
     }
 
-    public static FragmentMain newInstance(String data) {
+    public static FragmentA newInstance(String data) {
 
         Bundle args = new Bundle();
-        args.putString(KEY_NAME,data);
-        FragmentMain fragment = new FragmentMain();
+        args.putString(KEY_DATA,data);
+        FragmentA fragment = new FragmentA();
         fragment.setArguments(args);
         return fragment;
     }
